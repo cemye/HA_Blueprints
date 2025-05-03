@@ -1,0 +1,63 @@
+blueprint:
+  name: Motion-activated Light with Dark-Time Condition
+  description: Turn on lights when motion or occupancy is detected and it's dark. Turn off after a timeout.
+  domain: automation
+  input:
+    motion_sensor:
+      name: Motion or Occupancy Sensor
+      selector:
+        entity:
+          filter:
+            domain: binary_sensor
+            device_class:
+              - motion
+              - occupancy
+    light_target:
+      name: Light Target
+      selector:
+        target:
+          entity:
+            domain: light
+    timeout:
+      name: Time to wait before turning off (no motion)
+      selector:
+        duration: {}
+    dark_time_sensor:
+      name: Binary Sensor for Dark Time
+      default: binary_sensor.dark_time
+      selector:
+        entity:
+          filter:
+            domain: binary_sensor
+
+triggers:
+  - trigger: state
+    entity_id: !input motion_sensor
+    to: "on"
+    id: motion
+  - trigger: state
+    entity_id: !input motion_sensor
+    to: "off"
+    for: !input timeout
+    id: nomotion
+
+conditions:
+  - condition: state
+    entity_id: !input dark_time_sensor
+    state: "on"
+
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: motion
+        sequence:
+          - action: light.turn_on
+            target: !input light_target
+      - conditions:
+          - condition: trigger
+            id: nomotion
+        sequence:
+          - action: light.turn_off
+            target: !input light_target
+mode: single
