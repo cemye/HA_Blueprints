@@ -11,15 +11,10 @@ blueprint:
             domain: binary_sensor
             device_class:
               - motion
-              - occupancy
     light_target:
       name: Light or Switch Target
       selector:
-        target:
-          entity:
-            domain:
-              - light
-              - switch
+        target: {}
     timeout:
       name: Time to wait before turning off (no motion)
       selector:
