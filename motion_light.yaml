@@ -18,7 +18,6 @@ blueprint:
           entity:
             domain: 
               - light
-              - switch
     timeout:
       name: Time to wait before turning off (no motion)
       selector:
