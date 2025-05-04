@@ -13,13 +13,13 @@ blueprint:
               - motion
               - occupancy
     light_target:
-      name: Light Target
+      name: Light or Switch Target
       selector:
+        target:
           entity:
-           filter:
-              domain: 
-                - light
-                - switch
+            domain:
+              - light
+              - switch
     timeout:
       name: Time to wait before turning off (no motion)
       selector:
