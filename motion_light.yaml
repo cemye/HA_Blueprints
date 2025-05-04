@@ -1,6 +1,6 @@
 blueprint:
   name: Motion-activated Light with Optional Dark-Time Condition
-  description: Turn on lights when motion or occupancy is detected. Optionally restrict to dark time. Turn off after a timeout.
+  description: Turn on lights when motion or occupancy is detected. Optionally check if it's dark. Turn off after a timeout.
   domain: automation
   input:
     motion_sensor:
@@ -12,22 +12,29 @@ blueprint:
             device_class:
               - motion
               - occupancy
+
     light_target:
-      name: Light or Switch Target
+      name: Light Target
       selector:
-        target: {}
+        target:
+          entity:
+            domain: light
+
     timeout:
       name: Time to wait before turning off (no motion)
       selector:
         duration: {}
+
     use_dark_time:
       name: Use Dark-Time Condition
       description: Only turn on lights when it's dark
-      default: false
+      default: true
       selector:
         boolean: {}
+
     dark_time_sensor:
       name: Binary Sensor for Dark Time
+      description: This sensor must be "on" for the automation to activate lights if enabled.
       default: binary_sensor.dark_time
       selector:
         entity:
@@ -45,28 +52,23 @@ trigger:
     for: !input timeout
     id: nomotion
 
+condition:
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: "{{ not (is_defined('use_dark_time') and use_dark_time) }}"
+      - condition: state
+        entity_id: !input dark_time_sensor
+        state: "on"
+
 action:
   - choose:
       - conditions:
           - condition: trigger
             id: motion
         sequence:
-          - choose:
-              - conditions:
-                  - condition: template
-                    value_template: "{{ not (input.use_dark_time | default(false)) }}"
-                sequence:
-                  - service: light.turn_on
-                    target: !input light_target
-              - conditions:
-                  - condition: template
-                    value_template: "{{ input.use_dark_time | default(false) }}"
-                  - condition: state
-                    entity_id: !input dark_time_sensor
-                    state: "on"
-                sequence:
-                  - service: light.turn_on
-                    target: !input light_target
+          - service: light.turn_on
+            target: !input light_target
       - conditions:
           - condition: trigger
             id: nomotion
