@@ -12,9 +12,13 @@ blueprint:
             device_class:
               - motion
     light_target:
-      name: Light or Switch Target
+      name: Light Target
       selector:
-        target: {}
+        target:
+          entity:
+            domain: 
+              - light
+              - switch
     timeout:
       name: Time to wait before turning off (no motion)
       selector:
