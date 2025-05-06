@@ -1,5 +1,5 @@
 blueprint:
-  name: Motion-activated Light with Optional Dark-Time Condition
+  name: Motion Light
   description: Turn on lights when motion or occupancy is detected. Optionally check if it's dark. Turn off after a timeout.
   domain: automation
   input:
