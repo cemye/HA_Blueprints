@@ -56,7 +56,7 @@ condition:
   - condition: or
     conditions:
       - condition: template
-        value_template: "{{ not use_dark_time }}"
+        value_template: "{{ not input.use_dark_time }}"
       - condition: state
         entity_id: !input dark_time_sensor
         state: "on"
